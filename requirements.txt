@@ -1,0 +1,9 @@
+pylint
+pytest
+pytest-mock
+pytest-cov
+black
+isort
+mypy
+numpy
+pygame

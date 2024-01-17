@@ -1,0 +1,11 @@
+ignore/
+
+.vscode/
+
+*.pyc
+*~
+__init__.py
+
+htmlcov/
+.coverage
+coverage.xml
