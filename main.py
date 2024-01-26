@@ -2,9 +2,9 @@
 
 import argparse
 import sys
-from typing import List, Sequence
+from typing import Sequence
 
-from simulation.agents import Agent, Collider, Pose, Position, Velocity, do_collide
+from simulation.simulator import Simulator
 from visualization.colors import COLORS, lighten_color
 from visualization.drawing import initialize_drawing, pygame_quit, update_drawing
 
@@ -86,31 +86,10 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
-def _create_traveler(args: argparse.Namespace) -> Agent:
-    return Agent(
-        Pose(Position(0, args.field_size[1] // 2)),
-        Velocity(2, 0),
-        Collider(args.traveler_collider_radius),
-    )
-
-
-def _create_hornets(args: argparse.Namespace) -> List[Agent]:
-    return [
-        Agent(
-            pose=Pose(Position.random_position(args.field_size)),
-            velocity=Velocity.random_velocity(args.hornet_velocity_range),
-            collider=Collider(args.hornet_collider_radius),
-        )
-        for i in range(args.hornet_count)
-    ]
-
-
 def main(argv: Sequence[str]):
     # pylint: disable=missing-function-docstring
     args = _parse_arguments(argv)
-
-    traveler = _create_traveler(args)
-    hornets = _create_hornets(args)
+    simulation = Simulator.from_cli_arguments(args)
     drawing = initialize_drawing(args.field_size, "Hornet Simulation")
     surface = drawing["surface"]
     clock = drawing["clock"]
@@ -119,9 +98,8 @@ def main(argv: Sequence[str]):
 
     while True:
         # tick: simulation
-        for agent in [traveler] + hornets:
-            agent.update(args.field_size)
-        collision = do_collide(traveler, hornets)
+        simulation.tick()
+        collision = simulation.collision()
 
         # tick: drawing
         if collision:
@@ -133,7 +111,7 @@ def main(argv: Sequence[str]):
         update_drawing(
             surface=surface,
             surface_color=field_color,
-            agents=[traveler] + hornets,
+            agents=[simulation.traveler] + simulation.hornets,
             colors=[traveler_color] + hornet_colors,
             clock=clock,
             frame_rate=frame_rate,
