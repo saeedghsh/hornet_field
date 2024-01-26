@@ -2,48 +2,14 @@
 
 import argparse
 import sys
-from typing import Sequence
-
-import pygame
+from typing import List, Sequence
 
 from agents import Agent, Collider, Pose, Position, Velocity, do_collide
-from colors import COLORS, Color, darken_color, lighten_color
+from colors import COLORS, lighten_color
+from drawing import initialize_drawing, pygame_quit, update_drawing
 
 
-def _pygame_quit(events) -> bool:
-    for event in events:
-        if event.type == pygame.QUIT:  # pylint: disable=no-member
-            return True
-    return False
-
-
-def _draw_agent(surface: pygame.Surface, agent: Agent, color: Color):
-    pygame.draw.circle(
-        surface=surface,
-        color=lighten_color(color),
-        center=agent.pose.position.as_list(),
-        radius=agent.collider.radius,
-    )
-    pygame.draw.circle(
-        surface=surface,
-        color=darken_color(color),
-        center=agent.pose.position.as_list(),
-        radius=1,
-    )
-
-
-def _update_field_surface(
-    surface: pygame.Surface,
-    surface_color: Color,
-    agents: Sequence[Agent],
-    colors: Sequence[Color],
-):
-    surface.fill(surface_color)
-    for agent, color in zip(agents, colors):
-        _draw_agent(surface, agent, color)
-
-
-def _parse_arguments(argv: Sequence[str]):
+def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Hornet Field entry point")
     parser.add_argument(
         "--hornet-count",
@@ -108,31 +74,28 @@ def _parse_arguments(argv: Sequence[str]):
     parser.add_argument(
         "--frame-rate",
         default=200,
-        type=int,
+        type=float,
         help="The frame rate (fps).",
     )
     parser.add_argument(
         "--collision-frame-rate",
         default=50,
-        type=int,
+        type=float,
         help="The frame rate (fps) during collision. Used to slow animation during collision",
     )
     return parser.parse_args(argv)
 
 
-def main(argv: Sequence[str]):
-    # pylint: disable=missing-function-docstring
-    args = _parse_arguments(argv)
-
-    field_color = lighten_color(COLORS[args.field_color])
-    hornet_color = COLORS[args.hornet_color]
-
-    traveler = Agent(
+def _create_traveler(args: argparse.Namespace) -> Agent:
+    return Agent(
         Pose(Position(0, args.field_size[1] // 2)),
         Velocity(2, 0),
         Collider(args.traveler_collider_radius),
     )
-    hornets = [
+
+
+def _create_hornets(args: argparse.Namespace) -> List[Agent]:
+    return [
         Agent(
             pose=Pose(Position.random_position(args.field_size)),
             velocity=Velocity.random_velocity(args.hornet_velocity_range),
@@ -141,39 +104,44 @@ def main(argv: Sequence[str]):
         for i in range(args.hornet_count)
     ]
 
-    pygame.init()  # pylint: disable=no-member
-    screen = pygame.display.set_mode(args.field_size)
-    pygame.display.set_caption("Hornet Simulation")
-    clock = pygame.time.Clock()
+
+def main(argv: Sequence[str]):
+    # pylint: disable=missing-function-docstring
+    args = _parse_arguments(argv)
+
+    traveler = _create_traveler(args)
+    hornets = _create_hornets(args)
+    drawing = initialize_drawing(args.field_size, "Hornet Simulation")
+    surface = drawing["surface"]
+    clock = drawing["clock"]
+    field_color = lighten_color(COLORS[args.field_color])
+    hornet_colors = args.hornet_count * [COLORS[args.hornet_color]]
 
     while True:
-        if _pygame_quit(pygame.event.get()):
-            break
+        # tick: simulation
+        for agent in [traveler] + hornets:
+            agent.update(args.field_size)
+        collision = do_collide(traveler, hornets)
 
-        # move the agents
-        traveler.update(args.field_size)
-        for hornet in hornets:
-            hornet.update(args.field_size)
-
-        # detect collision
-        if do_collide(traveler, hornets):
+        # tick: drawing
+        if collision:
             traveler_color = COLORS[args.traveler_collision_color]
             frame_rate = args.collision_frame_rate
         else:
             traveler_color = COLORS[args.traveler_color]
             frame_rate = args.frame_rate
-
-        _update_field_surface(
-            surface=screen,
+        update_drawing(
+            surface=surface,
             surface_color=field_color,
             agents=[traveler] + hornets,
-            colors=[traveler_color] + args.hornet_count * [hornet_color],
+            colors=[traveler_color] + hornet_colors,
+            clock=clock,
+            frame_rate=frame_rate,
         )
 
-        pygame.display.flip()
-        clock.tick(frame_rate)
-
-    pygame.quit()  # pylint: disable=no-member
+        # handle quitting
+        if pygame_quit():
+            break
 
 
 if __name__ == "__main__":
