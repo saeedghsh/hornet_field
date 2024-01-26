@@ -59,10 +59,10 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     )
     parser.add_argument(
         "--field-color",
-        default="green",
+        default="black",
         choices=list(COLORS.keys()),
         type=str,
-        help="The color of field.",
+        help="The color of field (selected color will be lightened e.g. black -> gray).",
     )
     parser.add_argument(
         "--field-size",
