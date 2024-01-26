@@ -1,6 +1,6 @@
 """Colors and helpers"""
 
-from typing import Tuple
+from typing import Sequence, Tuple
 
 Color = Tuple[int, int, int]
 
@@ -11,6 +11,11 @@ COLORS = {
     "blue": (0, 0, 255),
     "yellow": (255, 255, 0),
 }
+
+
+def available_colors() -> Sequence[str]:
+    # pylint: disable=missing-function-docstring
+    return list(COLORS.keys())
 
 
 def lighten_color(color: Color, ratio: float = 0.5) -> Color:

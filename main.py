@@ -5,8 +5,10 @@ import sys
 from typing import Sequence
 
 from simulation.simulator import Simulator
-from visualization.colors import COLORS, lighten_color
-from visualization.drawing import initialize_drawing, pygame_quit, update_drawing
+from visualization.colors import available_colors
+from visualization.drawing import Visualizer, pygame_quit
+
+COLOR_CHOICES = available_colors()
 
 
 def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
@@ -20,7 +22,7 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument(
         "--hornet-color",
         default="yellow",
-        choices=list(COLORS.keys()),
+        choices=COLOR_CHOICES,
         type=str,
         help="The color of hornet agent.",
     )
@@ -40,7 +42,7 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument(
         "--traveler-color",
         default="blue",
-        choices=list(COLORS.keys()),
+        choices=COLOR_CHOICES,
         type=str,
         help="The color of traveler agent.",
     )
@@ -53,14 +55,14 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument(
         "--traveler-collision-color",
         default="red",
-        choices=list(COLORS.keys()),
+        choices=COLOR_CHOICES,
         type=str,
         help="The color of traveler agent with in collision.",
     )
     parser.add_argument(
         "--field-color",
         default="black",
-        choices=list(COLORS.keys()),
+        choices=COLOR_CHOICES,
         type=str,
         help="The color of field (selected color will be lightened e.g. black -> gray).",
     )
@@ -89,35 +91,12 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
 def main(argv: Sequence[str]):
     # pylint: disable=missing-function-docstring
     args = _parse_arguments(argv)
-    simulation = Simulator.from_cli_arguments(args)
-    drawing = initialize_drawing(args.field_size, "Hornet Simulation")
-    surface = drawing["surface"]
-    clock = drawing["clock"]
-    field_color = lighten_color(COLORS[args.field_color])
-    hornet_colors = args.hornet_count * [COLORS[args.hornet_color]]
+    simulator = Simulator.from_cli_arguments(args)
+    visualizer = Visualizer.from_cli_arguments(args)
 
     while True:
-        # tick: simulation
-        simulation.tick()
-        collision = simulation.collision()
-
-        # tick: drawing
-        if collision:
-            traveler_color = COLORS[args.traveler_collision_color]
-            frame_rate = args.collision_frame_rate
-        else:
-            traveler_color = COLORS[args.traveler_color]
-            frame_rate = args.frame_rate
-        update_drawing(
-            surface=surface,
-            surface_color=field_color,
-            agents=[simulation.traveler] + simulation.hornets,
-            colors=[traveler_color] + hornet_colors,
-            clock=clock,
-            frame_rate=frame_rate,
-        )
-
-        # handle quitting
+        simulator.tick()
+        visualizer.tick(simulator)
         if pygame_quit():
             break
 
