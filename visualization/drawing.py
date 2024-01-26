@@ -4,8 +4,8 @@ from typing import Sequence, TypedDict
 
 import pygame
 
-from agents import Agent
-from colors import Color, darken_color, lighten_color
+from simulation.agents import Agent
+from visualization.colors import Color, darken_color, lighten_color
 
 
 class Drawing(TypedDict, total=True):

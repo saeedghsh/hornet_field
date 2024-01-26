@@ -4,9 +4,9 @@ import argparse
 import sys
 from typing import List, Sequence
 
-from agents import Agent, Collider, Pose, Position, Velocity, do_collide
-from colors import COLORS, lighten_color
-from drawing import initialize_drawing, pygame_quit, update_drawing
+from simulation.agents import Agent, Collider, Pose, Position, Velocity, do_collide
+from visualization.colors import COLORS, lighten_color
+from visualization.drawing import initialize_drawing, pygame_quit, update_drawing
 
 
 def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
