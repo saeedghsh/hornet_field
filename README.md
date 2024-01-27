@@ -5,6 +5,7 @@
 [![pylint](https://github.com/saeedghsh/hornet_field/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/saeedghsh/hornet_field/actions/workflows/pylint.yml)
 [![mypy](https://github.com/saeedghsh/hornet_field/actions/workflows/type-check.yml/badge.svg?branch=master)](https://github.com/saeedghsh/hornet_field/actions/workflows/type-check.yml)
 [![pytest](https://github.com/saeedghsh/hornet_field/actions/workflows/pytest.yml/badge.svg?branch=master)](https://github.com/saeedghsh/hornet_field/actions/workflows/pytest.yml)
+[![pytest-cov](https://github.com/saeedghsh/hornet_field/actions/workflows/pytest-cov.yml/badge.svg?branch=master)](https://github.com/saeedghsh/hornet_field/actions/workflows/pytest-cov.yml)
 
 In the "Survivorship Bias" episode of the "You Are Not So Smart" podcast, an
 analogy was made about bomber crew in WWII being like shirtless runners in a
@@ -39,6 +40,8 @@ $ isort . --check-only
 $ mypy . --explicit-package-bases
 $ pylint $(git ls-files '*.py')
 $ xvfb-run --auto-servernum pytest
+$ xvfb-run --auto-servernum pytest --cov=.
+$ xvfb-run --auto-servernum pytest --cov=. --cov-report html; firefox htmlcov/index.html
 ```
 
 # License
