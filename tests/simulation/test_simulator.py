@@ -1,6 +1,7 @@
 # pylint: disable=missing-module-docstring
 # pylint: disable=missing-function-docstring
 
+import argparse
 from unittest.mock import Mock, create_autospec
 
 import pytest
@@ -39,25 +40,31 @@ def test_simulator_collision(monkeypatch):
     assert simulator.collision() is True
 
 
-def test_simulator_from_cli_arguments(monkeypatch):
-    args = Mock(
+def test_simulator_from_cli_arguments():
+    # given
+    args = argparse.Namespace(
         field_size=(100, 200),
-        traveler_collider_radius=5,
+        hornet_count=5,
         hornet_velocity_range=(1, 3),
         hornet_collider_radius=2,
-        hornet_count=5,
+        traveler_collider_radius=5,
     )
-    mock_traveler = Mock(spec=Agent)
-    mock_hornets = [Mock(spec=Agent) for _ in range(args.hornet_count)]
-    monkeypatch.setattr("simulation.simulator._create_traveler", Mock(return_value=mock_traveler))
-    monkeypatch.setattr("simulation.simulator._create_hornets", Mock(return_value=mock_hornets))
-
+    # when
     simulator = Simulator.from_cli_arguments(args)
-
+    # then
     assert isinstance(simulator, Simulator)
-    assert simulator.traveler is mock_traveler
-    assert simulator.hornets == mock_hornets
+    assert simulator.traveler.pose.position.x == 0
+    assert simulator.traveler.pose.position.y == args.field_size[1] // 2
+    assert simulator.traveler.collider.radius == args.traveler_collider_radius
     assert len(simulator.hornets) == args.hornet_count
+    field_width, field_height = args.field_size
+    vel_min, vel_max = args.hornet_velocity_range
+    for hornet in simulator.hornets:
+        assert hornet.collider.radius == args.hornet_collider_radius
+        assert 0 <= hornet.pose.position.x <= field_width
+        assert 0 <= hornet.pose.position.y <= field_height
+        assert vel_min <= hornet.velocity.x <= vel_max
+        assert vel_min <= hornet.velocity.y <= vel_max
 
 
 if __name__ == "__main__":
