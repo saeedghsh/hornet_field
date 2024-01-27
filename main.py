@@ -1,6 +1,8 @@
 """Entry point for the Hornet Field"""
 
 import argparse
+import os
+import shutil
 import sys
 from typing import Sequence
 
@@ -85,12 +87,35 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
         type=float,
         help="Maximum iteration count, after which the process will terminate",
     )
+    parser.add_argument(
+        "--save-to-file",
+        action="store_true",
+        help="Save frames as images.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="output",
+        type=str,
+        help="Path to directory to save images.",
+    )
     return parser.parse_args(argv)
+
+
+def _prepare_output_dir(dir_path: str):
+    if os.path.exists(dir_path):
+        shutil.rmtree(dir_path)
+    os.makedirs(dir_path)
 
 
 def main(argv: Sequence[str]):
     # pylint: disable=missing-function-docstring
     args = _parse_arguments(argv)
+
+    if args.save_to_file:
+        if args.max_iteration == float("inf"):
+            raise ValueError("--max-iteration must be set if --save-to-file is true")
+        _prepare_output_dir(args.output_dir)
+
     simulator = Simulator.from_cli_arguments(args)
     visualizer = Visualizer.from_cli_arguments(args)
 
@@ -98,9 +123,13 @@ def main(argv: Sequence[str]):
     while True:
         simulator.tick()
         visualizer.tick(simulator)
+        if args.save_to_file:
+            visualizer.save_to_file(os.path.join(args.output_dir, f"frame_{iteration:05}.png"))
         if pygame_quit() or iteration > args.max_iteration:
             break
         iteration += 1
+
+    return os.EX_OK
 
 
 if __name__ == "__main__":

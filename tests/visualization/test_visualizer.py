@@ -1,6 +1,7 @@
 # pylint: disable=missing-module-docstring
 # pylint: disable=missing-function-docstring
 import argparse
+import os
 from unittest.mock import Mock, patch
 
 import pytest
@@ -122,6 +123,27 @@ def test_visualizer_tick_smoke_test():
     simulator.traveler.pose.position.y = simulator.hornets[0].pose.position.y
     assert simulator.collision()
     visualizer.tick(simulator)
+
+
+def test_visualizer_save_to_file_smoke_test(tmp_path: str):
+    args = argparse.Namespace(
+        hornet_count=1,
+        hornet_color="yellow",
+        hornet_collider_radius=1,
+        hornet_velocity_range=(0, 1),
+        traveler_color="blue",
+        traveler_collider_radius=1,
+        traveler_collision_color="red",
+        field_color="green",
+        field_size=(10, 10),
+        frame_rate=60.0,
+    )
+    simulator = Simulator.from_cli_arguments(args)
+    visualizer = Visualizer.from_cli_arguments(args)
+    visualizer.tick(simulator)
+    file_path = os.path.join(tmp_path, "tmp.png")
+    visualizer.save_to_file(file_path)
+    assert os.path.exists(file_path)
 
 
 if __name__ == "__main__":

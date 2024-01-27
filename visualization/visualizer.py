@@ -76,6 +76,9 @@ class Visualizer:
             frame_rate=self._config.frame_rate,
         )
 
+    def save_to_file(self, file_path: str):
+        pygame.image.save(self._surface, file_path)
+
 
 def pygame_quit() -> bool:
     """Return True if a pygame.QUIT event occurred.
