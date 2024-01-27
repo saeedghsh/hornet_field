@@ -17,7 +17,6 @@ def test_visualizer_config_initialization():
     expected_traveler_color = (0, 0, 255)
     expected_traveler_collision_color = (255, 255, 0)
     expected_frame_rate = 60.0
-    expected_collision_frame_rate = 30.0
     # when
     actual_config = VisualizerConfig(
         surface_color=expected_surface_color,
@@ -25,7 +24,6 @@ def test_visualizer_config_initialization():
         traveler_color=expected_traveler_color,
         traveler_collision_color=expected_traveler_collision_color,
         frame_rate=expected_frame_rate,
-        collision_frame_rate=expected_collision_frame_rate,
     )
     # then
     assert actual_config.surface_color == expected_surface_color
@@ -33,7 +31,6 @@ def test_visualizer_config_initialization():
     assert actual_config.traveler_color == expected_traveler_color
     assert actual_config.traveler_collision_color == expected_traveler_collision_color
     assert actual_config.frame_rate == expected_frame_rate
-    assert actual_config.collision_frame_rate == expected_collision_frame_rate
 
 
 @patch("visualization.visualizer.pygame")
@@ -57,7 +54,6 @@ def test_visualizer_from_cli_arguments(pygame_mock):
         traveler_color="blue",
         traveler_collision_color="yellow",
         frame_rate=60.0,
-        collision_frame_rate=30.0,
     )
     # when
     visualizer = Visualizer.from_cli_arguments(args)
@@ -76,7 +72,6 @@ def test_visualizer_tick(pygame_mock):
         traveler_color=COLORS["blue"],
         traveler_collision_color=COLORS["yellow"],
         frame_rate=60.0,
-        collision_frame_rate=30.0,
     )
 
     mock_agent = Mock()
@@ -110,7 +105,6 @@ def test_visualizer_tick_smoke_test():
         field_color="green",
         field_size=(10, 10),
         frame_rate=60.0,
-        collision_frame_rate=30.0,
     )
     simulator = Simulator.from_cli_arguments(args)
     visualizer = Visualizer.from_cli_arguments(args)

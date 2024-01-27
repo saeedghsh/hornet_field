@@ -19,7 +19,6 @@ class VisualizerConfig:
     traveler_color: Color
     traveler_collision_color: Color
     frame_rate: float
-    collision_frame_rate: float
 
 
 class Visualizer:
@@ -41,7 +40,6 @@ class Visualizer:
             traveler_color=COLORS[args.traveler_color],
             traveler_collision_color=COLORS[args.traveler_collision_color],
             frame_rate=args.frame_rate,
-            collision_frame_rate=args.collision_frame_rate,
         )
         return Visualizer(surface_size=args.field_size, config=config)
 
@@ -69,15 +67,13 @@ class Visualizer:
     def tick(self, simulator: Simulator):
         if simulator.collision():
             traveler_color = self._config.traveler_collision_color
-            frame_rate = self._config.collision_frame_rate
         else:
             traveler_color = self._config.traveler_color
-            frame_rate = self._config.frame_rate
         hornet_colors = len(simulator.hornets) * [self._config.hornet_color]
         self._update(
             agents=[simulator.traveler] + simulator.hornets,
             colors=[traveler_color] + hornet_colors,
-            frame_rate=frame_rate,
+            frame_rate=self._config.frame_rate,
         )
 
 

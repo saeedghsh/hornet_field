@@ -80,12 +80,6 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
         help="The frame rate (fps).",
     )
     parser.add_argument(
-        "--collision-frame-rate",
-        default=50,
-        type=float,
-        help="The frame rate (fps) during collision. Used to slow animation during collision",
-    )
-    parser.add_argument(
         "--max-iteration",
         default=float("inf"),
         type=float,
