@@ -6,7 +6,7 @@ from typing import Sequence
 
 from simulation.simulator import Simulator
 from visualization.colors import available_colors
-from visualization.drawing import Visualizer, pygame_quit
+from visualization.visualizer import Visualizer, pygame_quit
 
 COLOR_CHOICES = available_colors()
 
