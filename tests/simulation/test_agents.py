@@ -71,7 +71,7 @@ def test_collider_initialization_invalid_radius(expected_radius: float):
         Collider(expected_radius)
 
 
-@pytest.mark.parametrize("position", [[5, 5], [6.5, 10], [1, 1]])
+@pytest.mark.parametrize("position", [[9, 5], [6.5, 10], [1, 1]])
 @pytest.mark.parametrize("velocity", [[1, 1], [2.5, -1.0]])
 @pytest.mark.parametrize("field_size", [(50, 50), (10, 10)])
 def test_agent_update(position: List[float], velocity: List[float], field_size: Tuple[int, int]):
