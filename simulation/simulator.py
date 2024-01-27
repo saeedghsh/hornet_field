@@ -28,7 +28,6 @@ def _create_hornets(args: argparse.Namespace) -> List[Agent]:
 class Simulator:
     # pylint: disable=missing-class-docstring
     # pylint: disable=missing-function-docstring
-
     def __init__(self, traveler: Agent, hornets: List[Agent], field_size: Sequence[int]):
         self._traveler = traveler
         self._hornets = hornets
