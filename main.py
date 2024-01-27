@@ -85,6 +85,12 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
         type=float,
         help="The frame rate (fps) during collision. Used to slow animation during collision",
     )
+    parser.add_argument(
+        "--max-iteration",
+        default=float("inf"),
+        type=float,
+        help="Maximum iteration count, after which the process will terminate",
+    )
     return parser.parse_args(argv)
 
 
@@ -94,11 +100,13 @@ def main(argv: Sequence[str]):
     simulator = Simulator.from_cli_arguments(args)
     visualizer = Visualizer.from_cli_arguments(args)
 
+    iteration = 0
     while True:
         simulator.tick()
         visualizer.tick(simulator)
-        if pygame_quit():
+        if pygame_quit() or iteration > args.max_iteration:
             break
+        iteration += 1
 
 
 if __name__ == "__main__":

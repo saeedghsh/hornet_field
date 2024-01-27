@@ -43,11 +43,8 @@ def test_pygame_quit(pygame_mock):
     pygame_mock.event.get.return_value = [mock_event]
 
     assert pygame_quit() is True
-    pygame_mock.quit.assert_called_once()
-
     pygame_mock.event.get.return_value = []
     assert pygame_quit() is False
-    pygame_mock.quit.assert_called_once()
 
 
 @patch("visualization.visualizer.pygame")

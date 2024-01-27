@@ -82,11 +82,10 @@ class Visualizer:
 
 
 def pygame_quit() -> bool:
-    """Quit pygame and Return True; if a pygame.QUIT event occurred.
+    """Return True if a pygame.QUIT event occurred.
     pygame.QUIT: e.g. when user closes the display window."""
     # pylint: disable=no-member
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
             return True
     return False
