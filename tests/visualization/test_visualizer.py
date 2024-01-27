@@ -1,5 +1,6 @@
 # pylint: disable=missing-module-docstring
 # pylint: disable=missing-function-docstring
+import argparse
 from unittest.mock import Mock, patch
 
 import pytest
@@ -98,6 +99,38 @@ def test_visualizer_tick(pygame_mock):
     pygame_mock.display.flip.assert_called()
     assert pygame_mock.draw.circle.call_count == 2 * 4  # 1 traveler + 3 hornets (twice per agent)
     simulator.collision.assert_called()
+
+
+def test_visualizer_tick_smoke_test():
+    args = argparse.Namespace(
+        hornet_count=1,
+        hornet_color="yellow",
+        hornet_collider_radius=1,
+        hornet_velocity_range=(0, 1),
+        traveler_color="blue",
+        traveler_collider_radius=1,
+        traveler_collision_color="red",
+        field_color="green",
+        field_size=(10, 10),
+        frame_rate=60.0,
+        collision_frame_rate=30.0,
+    )
+    simulator = Simulator.from_cli_arguments(args)
+    visualizer = Visualizer.from_cli_arguments(args)
+    simulator.traveler.velocity.x = 0
+    simulator.traveler.velocity.y = 0
+    simulator.traveler.pose.position.x = 0
+    simulator.traveler.pose.position.y = 1
+    simulator.hornets[0].pose.position.x = 3
+    simulator.hornets[0].pose.position.y = 5
+    simulator.hornets[0].velocity.x = 0
+    simulator.hornets[0].velocity.y = 0
+    assert not simulator.collision()
+    visualizer.tick(simulator)
+    simulator.traveler.pose.position.x = simulator.hornets[0].pose.position.x
+    simulator.traveler.pose.position.y = simulator.hornets[0].pose.position.y
+    assert simulator.collision()
+    visualizer.tick(simulator)
 
 
 if __name__ == "__main__":
