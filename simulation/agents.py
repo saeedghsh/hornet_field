@@ -26,6 +26,8 @@ class Position(Cartesian):
     def random_position(size: Tuple[int, int]) -> "Position":
         """Return a random position bound to [0, width] and [0, height]"""
         width, height = size
+        if width <= 0 or height <= 0:
+            raise ValueError(f"Size must be positive value; got {size}")
         return Position(random.randint(0, width), random.randint(0, height))
 
 
@@ -49,6 +51,10 @@ class Pose:
 @dataclass
 class Collider:
     radius: float
+
+    def __post_init__(self):
+        if self.radius < 0:
+            raise ValueError(f"Collider radius cannot be negative, got: {self.radius}")
 
 
 @dataclass

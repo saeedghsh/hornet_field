@@ -38,6 +38,7 @@ $ black . --check
 $ isort . --check-only
 $ mypy . --explicit-package-bases
 $ pylint $(git ls-files '*.py')
+$ pytest
 ```
 
 # License
