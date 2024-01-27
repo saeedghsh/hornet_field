@@ -4,7 +4,7 @@
 [![black](https://github.com/saeedghsh/hornet_field/actions/workflows/formatting.yml/badge.svg?branch=master)](https://github.com/saeedghsh/hornet_field/actions/workflows/formatting.yml)
 [![pylint](https://github.com/saeedghsh/hornet_field/actions/workflows/pylint.yml/badge.svg?branch=master)](https://github.com/saeedghsh/hornet_field/actions/workflows/pylint.yml)
 [![mypy](https://github.com/saeedghsh/hornet_field/actions/workflows/type-check.yml/badge.svg?branch=master)](https://github.com/saeedghsh/hornet_field/actions/workflows/type-check.yml)
-
+[![pytest](https://github.com/saeedghsh/hornet_field/actions/workflows/pytest.yml/badge.svg?branch=master)](https://github.com/saeedghsh/hornet_field/actions/workflows/pytest.yml)
 
 In the "Survivorship Bias" episode of the "You Are Not So Smart" podcast, an
 analogy was made about bomber crew in WWII being like shirtless runners in a
