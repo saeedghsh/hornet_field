@@ -74,7 +74,6 @@ def test_visualizer_tick(pygame_mock):
         traveler_collision_color=COLORS["yellow"],
         frame_rate=60.0,
     )
-
     mock_agent = Mock()
     mock_agent.pose = Mock()
     mock_agent.pose.position = Mock()
@@ -85,10 +84,9 @@ def test_visualizer_tick(pygame_mock):
     simulator.collision.return_value = False
     simulator.traveler = mock_agent
     simulator.hornets = [mock_agent for _ in range(3)]  # Reuse the same mock for simplicity
-
     visualizer = Visualizer(surface_size=(100, 200), config=config)
-    visualizer.tick(simulator)
-
+    hud_texts = [""]
+    visualizer.tick(simulator, hud_texts)
     pygame_mock.display.flip.assert_called()
     assert pygame_mock.draw.circle.call_count == 2 * 4  # 1 traveler + 3 hornets (twice per agent)
     simulator.collision.assert_called()
@@ -107,6 +105,7 @@ def test_visualizer_tick_smoke_test():
         field_size=(10, 10),
         frame_rate=60.0,
     )
+    hud_texts = [""]
     simulator = Simulator.from_cli_arguments(args)
     visualizer = Visualizer.from_cli_arguments(args)
     simulator.traveler.velocity.x = 0
@@ -118,11 +117,11 @@ def test_visualizer_tick_smoke_test():
     simulator.hornets[0].velocity.x = 0
     simulator.hornets[0].velocity.y = 0
     assert not simulator.collision()
-    visualizer.tick(simulator)
+    visualizer.tick(simulator, hud_texts)
     simulator.traveler.pose.position.x = simulator.hornets[0].pose.position.x
     simulator.traveler.pose.position.y = simulator.hornets[0].pose.position.y
     assert simulator.collision()
-    visualizer.tick(simulator)
+    visualizer.tick(simulator, hud_texts)
 
 
 def test_visualizer_save_to_file_smoke_test(tmp_path: str):
@@ -138,9 +137,10 @@ def test_visualizer_save_to_file_smoke_test(tmp_path: str):
         field_size=(10, 10),
         frame_rate=60.0,
     )
+    hud_texts = [""]
     simulator = Simulator.from_cli_arguments(args)
     visualizer = Visualizer.from_cli_arguments(args)
-    visualizer.tick(simulator)
+    visualizer.tick(simulator, hud_texts)
     file_path = os.path.join(tmp_path, "tmp.png")
     visualizer.save_to_file(file_path)
     assert os.path.exists(file_path)

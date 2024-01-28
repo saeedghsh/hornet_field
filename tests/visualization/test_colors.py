@@ -6,7 +6,7 @@ from visualization.colors import available_colors, darken_color, lighten_color
 
 
 def test_available_colors():
-    expected_colors = ["black", "red", "green", "blue", "yellow"]
+    expected_colors = ["black", "red", "green", "blue", "yellow", "white"]
     assert sorted(available_colors()) == sorted(expected_colors)
 
 

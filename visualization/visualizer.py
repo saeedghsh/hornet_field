@@ -6,7 +6,7 @@ from typing import Sequence
 
 import pygame
 
-from simulation.agents import Agent
+from simulation.agents import Agent, Cartesian
 from simulation.simulator import Simulator
 from visualization.colors import COLORS, Color, darken_color, lighten_color
 
@@ -21,6 +21,16 @@ class VisualizerConfig:
     frame_rate: float
 
 
+@dataclass
+class HeadsUpDisplayConfig:
+    # pylint: disable=missing-class-docstring
+    text_origin: Cartesian = Cartesian(2, 2)
+    text_line_gap: int = 0
+    font_size: int = 15
+    font_color: Color = COLORS["white"]
+    font_face: str = pygame.font.match_font("Courier")  # any monospaced font
+
+
 class Visualizer:
     # pylint: disable=missing-class-docstring
     # pylint: disable=missing-function-docstring
@@ -31,6 +41,8 @@ class Visualizer:
         self._surface = pygame.display.set_mode(surface_size)
         pygame.display.set_caption("Hornet Field Simulation")
         self._clock = pygame.time.Clock()
+        self._hud_config = HeadsUpDisplayConfig()
+        self._hud_font = pygame.font.Font(self._hud_config.font_face, self._hud_config.font_size)
 
     @staticmethod
     def from_cli_arguments(args: argparse.Namespace) -> "Visualizer":
@@ -57,24 +69,27 @@ class Visualizer:
             radius=1,
         )
 
-    def _update(self, agents: Sequence[Agent], colors: Sequence[Color], frame_rate: float):
-        self._surface.fill(self._config.surface_color)
-        for agent, color in zip(agents, colors):
-            self._draw_agent(agent, color)
-        pygame.display.flip()
-        self._clock.tick(frame_rate)
+    def _hud_overlay(self, hud_texts: Sequence[str]):
+        for idx, line in enumerate(hud_texts):
+            x = self._hud_config.text_origin.x
+            y = self._hud_config.text_origin.y
+            y += idx * (self._hud_config.font_size + self._hud_config.text_line_gap)
+            text_surface = self._hud_font.render(line, True, self._hud_config.font_color, None)
+            self._surface.blit(text_surface, (x, y))
 
-    def tick(self, simulator: Simulator):
+    def tick(self, simulator: Simulator, hud_texts: Sequence[str]):
         if simulator.collision():
             traveler_color = self._config.traveler_collision_color
         else:
             traveler_color = self._config.traveler_color
-        hornet_colors = len(simulator.hornets) * [self._config.hornet_color]
-        self._update(
-            agents=[simulator.traveler] + simulator.hornets,
-            colors=[traveler_color] + hornet_colors,
-            frame_rate=self._config.frame_rate,
-        )
+        self._surface.fill(self._config.surface_color)
+        agents = [simulator.traveler] + simulator.hornets
+        colors = [traveler_color] + len(simulator.hornets) * [self._config.hornet_color]
+        for agent, color in zip(agents, colors):
+            self._draw_agent(agent, color)
+        self._hud_overlay(hud_texts)
+        pygame.display.flip()
+        self._clock.tick(self._config.frame_rate)
 
     def save_to_file(self, file_path: str):
         pygame.image.save(self._surface, file_path)

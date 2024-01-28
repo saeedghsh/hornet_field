@@ -122,7 +122,8 @@ def main(argv: Sequence[str]):
     iteration = 0
     while True:
         simulator.tick()
-        visualizer.tick(simulator)
+        hud_texts = [f"Iteration: {iteration:>{6}} / {args.max_iteration}"]
+        visualizer.tick(simulator, hud_texts)
         if args.save_to_file:
             visualizer.save_to_file(os.path.join(args.output_dir, f"frame_{iteration:05}.png"))
         if pygame_quit() or iteration > args.max_iteration:
