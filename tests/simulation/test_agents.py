@@ -9,6 +9,23 @@ import pytest
 from simulation.agents import Agent, Cartesian, Collider, Pose, Position, Velocity, do_collide
 
 
+@pytest.mark.parametrize(
+    "point1, point2, equality",
+    [
+        [Cartesian(3.0, 4.0), Cartesian(3.0, 4.0), True],
+        [Cartesian(-3.0, 4.0), Cartesian(3.0, 4.0), False],
+        [Cartesian(-3.0, 4.0), Cartesian(-3.0, 4.0), True],
+    ],
+)
+def test_cartesian_eq(point1: Cartesian, point2: Cartesian, equality: bool):
+    assert (point1 == point2) == equality
+
+
+def test_cartesian_eq_not_implemented():
+    # pylint: disable=unnecessary-dunder-call
+    assert Cartesian(0.0, 0.0).__eq__([0, 0]) is NotImplemented
+
+
 @pytest.mark.parametrize("expected_point", [[3.0, 4.0], [-3.0, 4.0], [100.0, -10.0]])
 def test_cartesian_as_list(expected_point: List[float]):
     actual_point = Cartesian(*expected_point)

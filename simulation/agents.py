@@ -2,7 +2,7 @@
 
 # pylint: disable=missing-class-docstring
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import Any, List, Tuple
 
 import numpy as np
 
@@ -12,6 +12,11 @@ class Cartesian:
     x: float
     y: float
 
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, Cartesian):
+            return np.isclose(self.as_list(), other.as_list()).all().astype(bool)
+        return NotImplemented
+
     def as_list(self) -> list:  # pylint: disable=missing-function-docstring
         return [self.x, self.y]
 
@@ -19,7 +24,7 @@ class Cartesian:
         return np.array(self.as_list())
 
 
-@dataclass
+@dataclass(eq=False)
 class Position(Cartesian):
     @staticmethod
     def random_position(size: Tuple[int, int]) -> "Position":

@@ -1,6 +1,7 @@
 """Entry point for the Hornet Field"""
 
 import argparse
+import copy
 from typing import List, Sequence
 
 from simulation.agents import Agent, Collider, Pose, Position, Velocity, do_collide
@@ -11,16 +12,25 @@ class Simulator:
     # pylint: disable=missing-function-docstring
     def __init__(self, traveler: Agent, hornets: List[Agent], field_size: Sequence[int]):
         self._traveler = traveler
+        self._traveler_run_count = 0
         self._hornets = hornets
         self._field_size = field_size
 
     def tick(self):
+        former_velocity = copy.copy(self._traveler.velocity)
         self._traveler.update(self._field_size)
+        bounced = former_velocity != self._traveler.velocity
+        if bounced:
+            self._traveler_run_count += 1
         for hornet in self._hornets:
             hornet.update(self._field_size)
 
     def collision(self) -> bool:
         return do_collide(self._traveler, self._hornets)
+
+    @property
+    def traveler_run_count(self) -> int:
+        return self._traveler_run_count
 
     @property
     def traveler(self):

@@ -125,6 +125,7 @@ def main(argv: Sequence[str]):
         hud_texts = [
             f"Iteration: {iteration:>{6}} / {args.max_iteration}",
             f"Time (ms): {visualizer.time_ms:>{6}}",
+            f"Run count: {simulator.traveler_run_count:>{6}}",
         ]
         visualizer.tick(simulator, hud_texts)
         if args.save_to_file:
