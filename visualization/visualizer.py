@@ -43,6 +43,11 @@ class Visualizer:
         self._clock = pygame.time.Clock()
         self._hud_config = HeadsUpDisplayConfig()
         self._hud_font = pygame.font.Font(self._hud_config.font_face, self._hud_config.font_size)
+        self._time_ms = 0
+
+    @property
+    def time_ms(self) -> int:
+        return self._time_ms
 
     @staticmethod
     def from_cli_arguments(args: argparse.Namespace) -> "Visualizer":
@@ -89,7 +94,8 @@ class Visualizer:
             self._draw_agent(agent, color)
         self._hud_overlay(hud_texts)
         pygame.display.flip()
-        self._clock.tick(self._config.frame_rate)
+        elapsed_time_ms = self._clock.tick(self._config.frame_rate)
+        self._time_ms += elapsed_time_ms
 
     def save_to_file(self, file_path: str):
         pygame.image.save(self._surface, file_path)

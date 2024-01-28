@@ -122,7 +122,10 @@ def main(argv: Sequence[str]):
     iteration = 1
     while True:
         simulator.tick()
-        hud_texts = [f"Iteration: {iteration:>{6}} / {args.max_iteration}"]
+        hud_texts = [
+            f"Iteration: {iteration:>{6}} / {args.max_iteration}",
+            f"Time (ms): {visualizer.time_ms:>{6}}",
+        ]
         visualizer.tick(simulator, hud_texts)
         if args.save_to_file:
             visualizer.save_to_file(os.path.join(args.output_dir, f"frame_{iteration:05}.png"))
