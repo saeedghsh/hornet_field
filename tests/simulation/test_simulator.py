@@ -2,42 +2,51 @@
 # pylint: disable=missing-function-docstring
 
 import argparse
-from unittest.mock import Mock, create_autospec
+import copy
 
 import pytest
 
-from simulation.agents import Agent
+from simulation.agents import Agent, Collider, Pose, Position, Velocity
 from simulation.simulator import Simulator
 
 
-def test_simulator_initialization():
-    traveler = Mock(spec=Agent)
-    hornets = [Mock(spec=Agent) for _ in range(3)]
-    field_size = (100, 200)
+@pytest.mark.parametrize("hornet_count", [0, 1, 10])
+def test_simulator_initialization(hornet_count: int):
+    traveler = Agent(Pose(Position(0, 0)), Velocity(0, 0), Collider(0))
+    hornets = [
+        Agent(Pose(Position(0, 0)), Velocity(0, 0), Collider(0)) for _ in range(hornet_count)
+    ]
+    field_size = (10, 10)
     simulator = Simulator(traveler, hornets, field_size)
     assert simulator.traveler is traveler
     assert simulator.hornets is hornets
-    assert len(simulator.hornets) == 3
+    assert len(simulator.hornets) == hornet_count
 
 
 def test_simulator_tick():
-    traveler = create_autospec(Agent)
-    hornets = [create_autospec(Agent) for _ in range(3)]
-    field_size = (100, 200)
+    # given
+    traveler = Agent(Pose(Position(0, 0)), Velocity(1, 0), Collider(0))
+    traveler_former_position = copy.copy(traveler.pose.position)
+    hornets = [Agent(Pose(Position(0, 0)), Velocity(1, 0), Collider(0))]
+    hornets_former_position = [copy.copy(hornet.pose.position) for hornet in hornets]
+    field_size = (10, 10)
     simulator = Simulator(traveler, hornets, field_size)
+    # when
     simulator.tick()
-    traveler.update.assert_called_once_with(field_size)
-    for hornet in hornets:
-        hornet.update.assert_called_once_with(field_size)
+    # then
+    assert traveler_former_position != traveler.pose.position
+    for idx, hornet in enumerate(hornets):
+        assert hornets_former_position[idx] != hornet.pose.position
 
 
-def test_simulator_collision(monkeypatch):
-    traveler = Mock(spec=Agent)
-    hornets = [Mock(spec=Agent) for _ in range(3)]
-    field_size = (100, 200)
+def test_simulator_collision():
+    traveler = Agent(Pose(Position(0, 0)), Velocity(1, 0), Collider(1))
+    hornets = [Agent(Pose(Position(0, 0)), Velocity(1, 0), Collider(1))]
+    field_size = (10, 10)
     simulator = Simulator(traveler, hornets, field_size)
-    monkeypatch.setattr("simulation.agents.do_collide", Mock(return_value=True))
-    assert simulator.collision() is True
+    assert simulator.collision()
+    traveler.pose.position = Position(5, 5)
+    assert not simulator.collision()
 
 
 def test_simulator_from_cli_arguments():
