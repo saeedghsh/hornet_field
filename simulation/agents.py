@@ -1,7 +1,6 @@
 """Agent (traveler and hornet)"""
 
 # pylint: disable=missing-class-docstring
-import random
 from dataclasses import dataclass
 from typing import List, Tuple
 
@@ -28,7 +27,7 @@ class Position(Cartesian):
         width, height = size
         if width <= 0 or height <= 0:
             raise ValueError(f"Size must be positive value; got {size}")
-        return Position(random.randint(0, width), random.randint(0, height))
+        return Position(np.random.randint(0, width), np.random.randint(0, height))
 
 
 @dataclass
@@ -40,7 +39,7 @@ class Velocity(Cartesian):
         if _min >= _max:
             raise ValueError(f"Min must be less than max; got {_range}")
         interval = _max - _min
-        return Velocity(random.random() * interval + _min, random.random() * interval + _min)
+        return Velocity(np.random.rand() * interval + _min, np.random.rand() * interval + _min)
 
 
 @dataclass
