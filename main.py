@@ -119,7 +119,7 @@ def main(argv: Sequence[str]):
     simulator = Simulator.from_cli_arguments(args)
     visualizer = Visualizer.from_cli_arguments(args)
 
-    iteration = 0
+    iteration = 1
     while True:
         simulator.tick()
         hud_texts = [f"Iteration: {iteration:>{6}} / {args.max_iteration}"]
