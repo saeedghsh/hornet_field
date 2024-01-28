@@ -23,7 +23,7 @@ So here it goes, a stupidly unrelated simulation:
   other side.
 
 <p align="center">
-    <img src="https://github.com/saeedghsh/hornet_field/blob/master/images/hornet_field_02.gif">
+    <img src="https://github.com/saeedghsh/hornet_field/blob/master/images/hornet_field_03.gif">
 </p>
 
 * Behavior Mode (for both traveler and hornet) is derived from Cartesian product of:
