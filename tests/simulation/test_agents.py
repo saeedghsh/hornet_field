@@ -1,12 +1,12 @@
 # pylint: disable=missing-module-docstring
 # pylint: disable=missing-function-docstring
-from itertools import chain, combinations
+from itertools import combinations
 from typing import List, Tuple
 
 import numpy as np
 import pytest
 
-from simulation.agents import Agent, Cartesian, Collider, Pose, Position, Velocity, do_collide
+from simulation.agents import Agent, Cartesian, Collider, Pose, Position, Velocity
 
 
 @pytest.mark.parametrize(
@@ -108,7 +108,7 @@ def test_agent_update(position: List[float], velocity: List[float], field_size: 
     assert actual_agent.velocity.y == expected_velocity[1]
 
 
-def _collision_test_data():
+def test_agent_does_collide():
     agents = {
         1: Agent(Pose(Position(0, 0)), Velocity(0, 0), Collider(1)),
         2: Agent(Pose(Position(1, 1)), Velocity(0, 0), Collider(1)),
@@ -116,11 +116,6 @@ def _collision_test_data():
         4: Agent(Pose(Position(10, 10)), Velocity(0, 0), Collider(1)),
     }
     collisions = [(1, 2), (1, 3)]
-    return agents, collisions
-
-
-def test_agent_does_collide():
-    agents, collisions = _collision_test_data()
     for idx1, idx2 in list(combinations(agents.keys(), 2)):
         if (idx1, idx2) in collisions:
             assert agents[idx1].does_collide(agents[idx2])
@@ -128,19 +123,6 @@ def test_agent_does_collide():
         else:
             assert not agents[idx1].does_collide(agents[idx2])
             assert not agents[idx2].does_collide(agents[idx1])
-
-
-def test_do_collide():
-    agents, collisions = _collision_test_data()
-    colliding_agent_indices = list(chain(*collisions))
-    all_indices = list(agents.keys())
-    for self_idx in all_indices:
-        self_agent = agents[self_idx]
-        other_agents = [agents[other_idx] for other_idx in all_indices if other_idx != self_idx]
-        if self_idx in colliding_agent_indices:
-            assert do_collide(self_agent, other_agents)
-        else:
-            assert not do_collide(self_agent, other_agents)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@
 
 import argparse
 import copy
+from itertools import chain
 
 import pytest
 
@@ -57,6 +58,29 @@ def test_simulator_collision():
     assert simulator.collision()
     traveler.pose.position = Position(5, 5)
     assert not simulator.collision()
+
+
+def test_do_collide():
+    agents = {
+        1: Agent(Pose(Position(0, 0)), Velocity(0, 0), Collider(1)),
+        2: Agent(Pose(Position(1, 1)), Velocity(0, 0), Collider(1)),
+        3: Agent(Pose(Position(-10, 0)), Velocity(0, 0), Collider(10)),
+        4: Agent(Pose(Position(10, 10)), Velocity(0, 0), Collider(1)),
+    }
+    collisions = [(1, 2), (1, 3)]
+    colliding_agent_indices = list(chain(*collisions))
+    all_indices = list(agents.keys())
+    for self_idx in all_indices:
+        simulator = Simulator(
+            traveler=agents[self_idx],
+            hornets=[agents[other_idx] for other_idx in all_indices if other_idx != self_idx],
+            field_size=(100, 100),
+        )
+
+        if self_idx in colliding_agent_indices:
+            assert simulator.collision()
+        else:
+            assert not simulator.collision()
 
 
 def test_simulator_from_cli_arguments():

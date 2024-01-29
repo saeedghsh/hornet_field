@@ -2,7 +2,7 @@
 
 # pylint: disable=missing-class-docstring
 from dataclasses import dataclass
-from typing import Any, List, Tuple
+from typing import Any, Tuple
 
 import numpy as np
 
@@ -89,11 +89,3 @@ class Agent:
         if self._distance(other) < self.collider.radius + other.collider.radius:
             return True
         return False
-
-
-def do_collide(agent: Agent, others: List[Agent]) -> bool:
-    """Return True if agent collides with any of the others"""
-    for other in others:
-        if agent.does_collide(other):
-            return True
-    return False

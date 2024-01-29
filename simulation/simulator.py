@@ -4,7 +4,7 @@ import argparse
 import copy
 from typing import List, Sequence
 
-from simulation.agents import Agent, Collider, Pose, Position, Velocity, do_collide
+from simulation.agents import Agent, Collider, Pose, Position, Velocity
 
 
 class Simulator:
@@ -12,9 +12,9 @@ class Simulator:
     # pylint: disable=missing-function-docstring
     def __init__(self, traveler: Agent, hornets: List[Agent], field_size: Sequence[int]):
         self._traveler = traveler
-        self._traveler_run_count = 0
         self._hornets = hornets
         self._field_size = field_size
+        self._traveler_run_count = 0
 
     def tick(self):
         former_velocity = copy.copy(self._traveler.velocity)
@@ -26,7 +26,10 @@ class Simulator:
             hornet.update(self._field_size)
 
     def collision(self) -> bool:
-        return do_collide(self._traveler, self._hornets)
+        for other in self._hornets:
+            if self._traveler.does_collide(other):
+                return True
+        return False
 
     @property
     def traveler_run_count(self) -> int:
