@@ -52,9 +52,9 @@ class Simulator:
         )
         hornets = [
             Agent(
-                pose=Pose(Position.random_position(args.field_size)),
-                velocity=Velocity.random_velocity(args.hornet_velocity_range),
-                collider=Collider(args.hornet_collider_radius),
+                Pose(Position.random_position(args.field_size)),
+                Velocity.random_velocity(args.hornet_velocity_range),
+                Collider(args.hornet_collider_radius),
             )
             for i in range(args.hornet_count)
         ]
