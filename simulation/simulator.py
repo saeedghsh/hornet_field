@@ -56,6 +56,6 @@ class Simulator:
                 Velocity.random_velocity(args.hornet_velocity_range),
                 Collider(args.hornet_collider_radius),
             )
-            for i in range(args.hornet_count)
+            for _ in range(args.hornet_count)
         ]
         return Simulator(traveler, hornets, args.field_size)
