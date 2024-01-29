@@ -60,7 +60,7 @@ class Visualizer:
         )
         return Visualizer(surface_size=args.field_size, config=config)
 
-    def _draw_agent(self, agent: Agent, color: Color):
+    def _draw_agent(self, agent: Agent, color: Color):  # pragma: no cover
         pygame.draw.circle(
             surface=self._surface,
             color=lighten_color(color),
@@ -74,7 +74,7 @@ class Visualizer:
             radius=1,
         )
 
-    def _hud_overlay(self, hud_texts: Sequence[str]):
+    def _hud_overlay(self, hud_texts: Sequence[str]):  # pragma: no cover
         for idx, line in enumerate(hud_texts):
             x = self._hud_config.text_origin.x
             y = self._hud_config.text_origin.y

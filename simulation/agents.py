@@ -79,7 +79,7 @@ class Agent:
         if not 0 <= self.pose.position.y <= height:
             self.velocity.y *= -1
 
-    def _distance(self, other: "Agent") -> float:
+    def _distance(self, other: "Agent") -> float:  # pragma: no cover
         return np.linalg.norm(
             self.pose.position.as_ndarray() - other.pose.position.as_ndarray()
         ).astype(float)

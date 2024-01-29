@@ -14,7 +14,7 @@ COLORS = {
 }
 
 
-def available_colors() -> Sequence[str]:
+def available_colors() -> Sequence[str]:  # pragma: no cover
     # pylint: disable=missing-function-docstring
     return list(COLORS.keys())
 

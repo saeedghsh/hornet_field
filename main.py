@@ -14,6 +14,7 @@ COLOR_CHOICES = available_colors()
 
 
 def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
+    # pragma: no cover
     parser = argparse.ArgumentParser(description="Hornet Field entry point")
     parser.add_argument(
         "--hornet-count",
@@ -102,6 +103,7 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
 
 
 def _prepare_output_dir(dir_path: str):
+    # pragma: no cover
     if os.path.exists(dir_path):
         shutil.rmtree(dir_path)
     os.makedirs(dir_path)

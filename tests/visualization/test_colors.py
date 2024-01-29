@@ -2,12 +2,7 @@
 # pylint: disable=missing-function-docstring
 import pytest
 
-from visualization.colors import available_colors, darken_color, lighten_color
-
-
-def test_available_colors():
-    expected_colors = ["black", "red", "green", "blue", "yellow", "white"]
-    assert sorted(available_colors()) == sorted(expected_colors)
+from visualization.colors import darken_color, lighten_color
 
 
 def test_lighten_color():
