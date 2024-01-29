@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+from simulation.agents import Agent, Collider, Pose, Position, Velocity
 from simulation.simulator import Simulator
 from visualization.colors import COLORS
 from visualization.visualizer import Visualizer, VisualizerConfig, pygame_quit
@@ -74,22 +75,14 @@ def test_visualizer_tick(pygame_mock):
         traveler_collision_color=COLORS["yellow"],
         frame_rate=60.0,
     )
-    mock_agent = Mock()
-    mock_agent.pose = Mock()
-    mock_agent.pose.position = Mock()
-    mock_agent.pose.position.as_list.return_value = [50, 50]
-    mock_agent.collider = Mock()
-    mock_agent.collider.radius = 5
-    simulator = Mock(spec=Simulator)
-    simulator.collision.return_value = False
-    simulator.traveler = mock_agent
-    simulator.hornets = [mock_agent for _ in range(3)]  # Reuse the same mock for simplicity
+    traveler = Agent(Pose(Position(0, 0)), Velocity(0, 0), Collider(0))
+    hornet = Agent(Pose(Position(1, 1)), Velocity(0, 0), Collider(0))
+    simulator = Simulator(traveler, 3 * [hornet], (10, 10))
     visualizer = Visualizer(surface_size=(100, 200), config=config)
     hud_texts = [""]
     visualizer.tick(simulator, hud_texts)
     pygame_mock.display.flip.assert_called()
     assert pygame_mock.draw.circle.call_count == 2 * 4  # 1 traveler + 3 hornets (twice per agent)
-    simulator.collision.assert_called()
 
 
 def test_visualizer_tick_smoke_test():
