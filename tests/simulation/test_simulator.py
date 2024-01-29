@@ -34,10 +34,38 @@ def test_simulator_tick():
     simulator = Simulator(traveler, hornets, field_size)
     # when
     simulator.tick()
-    # then: pose.position should be change
+    # then: pose.position should be changed
     assert traveler_former_position != traveler.pose.position
     for idx, hornet in enumerate(hornets):
         assert hornets_former_position[idx] != hornet.pose.position
+
+
+def test_simulator_collision_count():
+    traveler = Agent(Pose(Position(5, 5)), Velocity(0, 0), Collider(1))
+    hornets = [Agent(Pose(Position(1, 1)), Velocity(0, 0), Collider(1)) for _ in range(3)]
+    field_size = (10, 10)
+    simulator = Simulator(traveler, hornets, field_size)
+
+    simulator.tick()
+    assert simulator.collision_count == 0
+
+    # hornets[0] just collided
+    simulator.hornets[0].pose.position = Position(5, 5)
+    simulator.tick()
+    assert simulator.collision_count == 1
+
+    # hornets[1] just collided, # hornets[0] and hornets[2] not in collision
+    simulator.hornets[0].pose.position = Position(1, 1)
+    simulator.hornets[1].pose.position = Position(5, 5)
+    simulator.tick()
+    assert simulator.collision_count == 2
+
+    # hornets[1] already in collision
+    # hornets[0] and hornets[2] just collided
+    simulator.hornets[0].pose.position = Position(5, 5)
+    simulator.hornets[2].pose.position = Position(5, 5)
+    simulator.tick()
+    assert simulator.collision_count == 4
 
 
 def test_simulator_traveler_run_count():

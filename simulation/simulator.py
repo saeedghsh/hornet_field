@@ -15,6 +15,8 @@ class Simulator:
         self._hornets = hornets
         self._field_size = field_size
         self._traveler_run_count = 0
+        self._colliding_hornets_idx: List[int] = []  # those in collision with traveler
+        self._collision_count = 0  # count of total [unique] hornet-traveler collision
 
     def tick(self):
         former_velocity = copy.copy(self._traveler.velocity)
@@ -22,14 +24,26 @@ class Simulator:
         bounced = former_velocity != self._traveler.velocity
         if bounced:
             self._traveler_run_count += 1
+
+        former_indices = set(self._colliding_hornets_idx)
         for hornet in self._hornets:
             hornet.update(self._field_size)
+        if self.collision():
+            new_colliding_idx = set(self._colliding_hornets_idx) - former_indices
+            self._collision_count += len(new_colliding_idx)
+
+    def _update_collision_list(self):  # pragma: no cover
+        self._colliding_hornets_idx = [
+            idx for idx, hornet in enumerate(self._hornets) if self._traveler.does_collide(hornet)
+        ]
 
     def collision(self) -> bool:
-        for other in self._hornets:
-            if self._traveler.does_collide(other):
-                return True
-        return False
+        self._update_collision_list()
+        return len(self._colliding_hornets_idx) != 0
+
+    @property
+    def collision_count(self) -> int:
+        return self._collision_count
 
     @property
     def traveler_run_count(self) -> int:
