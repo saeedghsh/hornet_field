@@ -2,9 +2,12 @@
 
 import argparse
 import copy
+import logging
 from typing import List, Sequence
 
 from simulation.agents import Agent, Collider, Pose, Position, Velocity
+
+logger = logging.getLogger(__name__)
 
 
 class Simulator:
@@ -72,4 +75,8 @@ class Simulator:
             )
             for _ in range(args.hornet_count)
         ]
-        return Simulator(traveler, hornets, args.field_size)
+        simulator = Simulator(traveler, hornets, args.field_size)
+        logger.info("Created traveler(s): %d", 1)
+        logger.info("Created hornets(s): %d", len(hornets))
+        logger.info("Created simulator of size: %d x %d", *args.field_size)
+        return simulator

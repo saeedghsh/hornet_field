@@ -1,6 +1,7 @@
 """Entry point for the Hornet Field"""
 
 import argparse
+import logging
 from dataclasses import dataclass
 from typing import Sequence
 
@@ -9,6 +10,8 @@ import pygame
 from simulation.agents import Agent, Cartesian
 from simulation.simulator import Simulator
 from visualization.colors import COLORS, Color, darken_color, lighten_color
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -49,17 +52,6 @@ class Visualizer:
     def time_ms(self) -> int:
         return self._time_ms
 
-    @staticmethod
-    def from_cli_arguments(args: argparse.Namespace) -> "Visualizer":
-        config = VisualizerConfig(
-            surface_color=lighten_color(COLORS[args.field_color]),
-            hornet_color=COLORS[args.hornet_color],
-            traveler_color=COLORS[args.traveler_color],
-            traveler_collision_color=COLORS[args.traveler_collision_color],
-            frame_rate=args.frame_rate,
-        )
-        return Visualizer(surface_size=args.field_size, config=config)
-
     def _draw_agent(self, agent: Agent, color: Color):  # pragma: no cover
         pygame.draw.circle(
             surface=self._surface,
@@ -99,6 +91,19 @@ class Visualizer:
 
     def save_to_file(self, file_path: str):
         pygame.image.save(self._surface, file_path)
+
+    @staticmethod
+    def from_cli_arguments(args: argparse.Namespace) -> "Visualizer":
+        config = VisualizerConfig(
+            surface_color=lighten_color(COLORS[args.field_color]),
+            hornet_color=COLORS[args.hornet_color],
+            traveler_color=COLORS[args.traveler_color],
+            traveler_collision_color=COLORS[args.traveler_collision_color],
+            frame_rate=args.frame_rate,
+        )
+        visualizer = Visualizer(surface_size=args.field_size, config=config)
+        logger.info("Created visualizer")
+        return visualizer
 
 
 def pygame_quit() -> bool:

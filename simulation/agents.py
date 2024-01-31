@@ -1,10 +1,13 @@
 """Agent (traveler and hornet)"""
 
 # pylint: disable=missing-class-docstring
+import logging
 from dataclasses import dataclass
 from typing import Any, Tuple
 
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -31,7 +34,9 @@ class Position(Cartesian):
         """Return a random position bound to [0, width] and [0, height]"""
         width, height = size
         if width <= 0 or height <= 0:
-            raise ValueError(f"Size must be positive value; got {size}")
+            error_message = f"Size must be positive value; got {size}"
+            logger.error(error_message)
+            raise ValueError(error_message)
         return Position(np.random.randint(0, width), np.random.randint(0, height))
 
 
@@ -42,7 +47,9 @@ class Velocity(Cartesian):
         """Return a random velocity bound to _range = [_min, _max]"""
         _min, _max = _range
         if _min >= _max:
-            raise ValueError(f"Min must be less than max; got {_range}")
+            error_message = f"Min must be less than max; got {_range}"
+            logger.error(error_message)
+            raise ValueError(error_message)
         interval = _max - _min
         return Velocity(np.random.rand() * interval + _min, np.random.rand() * interval + _min)
 
@@ -58,7 +65,9 @@ class Collider:
 
     def __post_init__(self):
         if self.radius < 0:
-            raise ValueError(f"Collider radius cannot be negative, got: {self.radius}")
+            error_message = f"Collider radius cannot be negative, got: {self.radius}"
+            logger.error(error_message)
+            raise ValueError(error_message)
 
 
 @dataclass

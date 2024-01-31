@@ -1,9 +1,11 @@
 """Entry point for the Hornet Field"""
 
 import argparse
+import logging
 import os
 import shutil
 import sys
+from datetime import datetime
 from typing import Sequence
 
 from simulation.simulator import Simulator
@@ -13,8 +15,7 @@ from visualization.visualizer import Visualizer, pygame_quit
 COLOR_CHOICES = available_colors()
 
 
-def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
-    # pragma: no cover
+def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:  # pragma: no cover
     parser = argparse.ArgumentParser(description="Hornet Field entry point")
     parser.add_argument(
         "--hornet-count",
@@ -97,32 +98,60 @@ def _parse_arguments(argv: Sequence[str]) -> argparse.Namespace:
         "--output-dir",
         default="output",
         type=str,
-        help="Path to directory to save images.",
+        help="Path to output directory (to save images.)",
     )
     return parser.parse_args(argv)
 
 
-def _prepare_output_dir(dir_path: str):
-    # pragma: no cover
+def _prepare_output_dir(dir_path: str):  # pragma: no cover
     if os.path.exists(dir_path):
         shutil.rmtree(dir_path)
     os.makedirs(dir_path)
 
 
+def _setup_logging() -> logging.Logger:  # pragma: no cover
+    dir_path = "logs"
+    level = logging.INFO
+    current_time = datetime.now().strftime("%Y%m%d%H%M%S")
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+
+    logger = logging.getLogger()
+    logger.setLevel(level)
+    log_file_path = os.path.join(dir_path, f"{current_time}_hornet_field.log")
+    handlers: Sequence[logging.Handler] = [
+        logging.StreamHandler(),
+        logging.FileHandler(log_file_path),
+    ]
+    for handler in handlers:
+        handler.setLevel(level)
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+    return logger
+
+
 def main(argv: Sequence[str]):
     # pylint: disable=missing-function-docstring
     args = _parse_arguments(argv)
+    logger = _setup_logging()
 
     if args.save_to_file:
         if args.max_iteration == float("inf"):
-            raise ValueError("--max-iteration must be set if --save-to-file is true")
+            error_message = "--max-iteration must be set if --save-to-file is true"
+            logger.error(error_message)
+            raise ValueError(error_message)
         _prepare_output_dir(args.output_dir)
 
     simulator = Simulator.from_cli_arguments(args)
     visualizer = Visualizer.from_cli_arguments(args)
 
+    logger.info("Starting the simulation")
     iteration = 1
     while True:
+        logger.debug("Iteration: %d", iteration)
         simulator.tick()
         hud_texts = [
             f"Iteration: {iteration:>{12}} / {args.max_iteration}",
@@ -133,9 +162,14 @@ def main(argv: Sequence[str]):
         visualizer.tick(simulator, hud_texts)
         if args.save_to_file:
             visualizer.save_to_file(os.path.join(args.output_dir, f"frame_{iteration:05}.png"))
-        if pygame_quit() or iteration > args.max_iteration:
+        if pygame_quit() or iteration >= args.max_iteration:
             break
         iteration += 1
+    logger.info("Ending the simulation")
+    logger.info("Total iteration count: %d/%d", iteration, args.max_iteration)
+    logger.info("Pygame Time (ms): %.2f", visualizer.time_ms)
+    logger.info("Count of traveler's run across field: %d", simulator.traveler_run_count)
+    logger.info("Count of traveler's collision: %d", simulator.collision_count)
 
     return os.EX_OK
 

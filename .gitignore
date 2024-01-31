@@ -1,5 +1,6 @@
 ignore/
 output/
+logs/
 
 .vscode/
 
