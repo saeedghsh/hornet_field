@@ -22,6 +22,11 @@ class Simulator:
         self._collision_count = 0  # count of total [unique] hornet-traveler collision
         self._iteration = 0
 
+        logger.info("Created simulator")
+        logger.info("Simulator has a of size: %d x %d", *field_size)
+        logger.info("Simulator has %d traveler(s)", 1)
+        logger.info("Simulator has %d hornets(s)", len(hornets))
+
     def tick(self):
         former_velocity = copy.copy(self._traveler.velocity)
         self._traveler.update(self._field_size)
@@ -81,8 +86,4 @@ class Simulator:
             )
             for _ in range(args.hornet_count)
         ]
-        simulator = Simulator(traveler, hornets, args.field_size)
-        logger.info("Created traveler(s): %d", 1)
-        logger.info("Created hornets(s): %d", len(hornets))
-        logger.info("Created simulator of size: %d x %d", *args.field_size)
-        return simulator
+        return Simulator(traveler, hornets, args.field_size)

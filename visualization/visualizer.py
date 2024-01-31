@@ -47,6 +47,7 @@ class Visualizer:
         self._hud_config = HeadsUpDisplayConfig()
         self._hud_font = pygame.font.Font(self._hud_config.font_face, self._hud_config.font_size)
         self._time_ms = 0
+        logger.info("Created visualizer")
 
     @property
     def time_ms(self) -> int:
@@ -101,9 +102,7 @@ class Visualizer:
             traveler_collision_color=COLORS[args.traveler_collision_color],
             frame_rate=args.frame_rate,
         )
-        visualizer = Visualizer(surface_size=args.field_size, config=config)
-        logger.info("Created visualizer")
-        return visualizer
+        return Visualizer(surface_size=args.field_size, config=config)
 
 
 def pygame_quit() -> bool:
