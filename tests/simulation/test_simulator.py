@@ -19,22 +19,22 @@ def test_simulator_initialization(hornet_count: int):
     ]
     field_size = (10, 10)
     simulator = Simulator(traveler, hornets, field_size)
+    assert simulator.iteration == 0
     assert simulator.traveler is traveler
     assert simulator.hornets is hornets
     assert len(simulator.hornets) == hornet_count
 
 
 def test_simulator_tick():
-    # given
     traveler = Agent(Pose(Position(0, 0)), Velocity(1, 0), Collider(0))
     traveler_former_position = copy.copy(traveler.pose.position)
     hornets = [Agent(Pose(Position(0, 0)), Velocity(1, 0), Collider(0))]
     hornets_former_position = [copy.copy(hornet.pose.position) for hornet in hornets]
     field_size = (10, 10)
     simulator = Simulator(traveler, hornets, field_size)
-    # when
+    assert simulator.iteration == 0
     simulator.tick()
-    # then: pose.position should be changed
+    assert simulator.iteration == 1
     assert traveler_former_position != traveler.pose.position
     for idx, hornet in enumerate(hornets):
         assert hornets_former_position[idx] != hornet.pose.position

@@ -20,6 +20,7 @@ class Simulator:
         self._traveler_run_count = 0
         self._colliding_hornets_idx: List[int] = []  # those in collision with traveler
         self._collision_count = 0  # count of total [unique] hornet-traveler collision
+        self._iteration = 0
 
     def tick(self):
         former_velocity = copy.copy(self._traveler.velocity)
@@ -34,6 +35,7 @@ class Simulator:
         if self.collision():
             new_colliding_idx = set(self._colliding_hornets_idx) - former_indices
             self._collision_count += len(new_colliding_idx)
+        self._iteration += 1
 
     def _update_collision_list(self):  # pragma: no cover
         self._colliding_hornets_idx = [
@@ -43,6 +45,10 @@ class Simulator:
     def collision(self) -> bool:
         self._update_collision_list()
         return len(self._colliding_hornets_idx) != 0
+
+    @property
+    def iteration(self) -> int:
+        return self._iteration
 
     @property
     def collision_count(self) -> int:

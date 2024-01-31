@@ -149,24 +149,25 @@ def main(argv: Sequence[str]):
     visualizer = Visualizer.from_cli_arguments(args)
 
     logger.info("Starting the simulation")
-    iteration = 1
     while True:
-        logger.debug("Iteration: %d", iteration)
+        logger.debug("Iteration: %d", simulator.iteration)
         simulator.tick()
         hud_texts = [
-            f"Iteration: {iteration:>{12}} / {args.max_iteration}",
+            f"Iteration: {simulator.iteration:>{12}} / {args.max_iteration}",
             f"Time (ms): {visualizer.time_ms:>{12}}",
             f"Run count: {simulator.traveler_run_count:>{12}}",
             f"collision count: {simulator.collision_count:>{6}}",
         ]
         visualizer.tick(simulator, hud_texts)
         if args.save_to_file:
-            visualizer.save_to_file(os.path.join(args.output_dir, f"frame_{iteration:05}.png"))
-        if pygame_quit() or iteration >= args.max_iteration:
+            visualizer.save_to_file(
+                os.path.join(args.output_dir, f"frame_{simulator.iteration:05}.png")
+            )
+        if pygame_quit() or simulator.iteration >= args.max_iteration:
             break
-        iteration += 1
+
     logger.info("Ending the simulation")
-    logger.info("Total iteration count: %d/%d", iteration, args.max_iteration)
+    logger.info("Total iteration count: %d/%d", simulator.iteration, args.max_iteration)
     logger.info("Pygame Time (ms): %.2f", visualizer.time_ms)
     logger.info("Count of traveler's run across field: %d", simulator.traveler_run_count)
     logger.info("Count of traveler's collision: %d", simulator.collision_count)
