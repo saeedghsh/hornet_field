@@ -22,6 +22,15 @@ So here it goes, a stupidly unrelated simulation:
 * A traveling agent that aims at getting from one side of the field to the
   other side.
 
+## Example
+
+Entry point examples:
+```bash
+python3 -m main
+python3 -m main --field-size 2400 1800 --hornet-count 1000
+python3 -m main --save-to-file --max-iteration 800
+```
+
 <p align="center">
     <img src="https://github.com/saeedghsh/hornet_field/blob/master/images/hornet_field_03.gif">
 </p>

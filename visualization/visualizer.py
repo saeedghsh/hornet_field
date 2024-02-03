@@ -47,7 +47,7 @@ class Visualizer:
         self._hud_config = HeadsUpDisplayConfig()
         self._hud_font = pygame.font.Font(self._hud_config.font_face, self._hud_config.font_size)
         self._time_ms = 0
-        logger.info("Created visualizer")
+        logger.info("Created visualizer.")
 
     @property
     def time_ms(self) -> int:
